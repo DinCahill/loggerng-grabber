@@ -31,7 +31,9 @@
 				selectable:true,
 				firstDay:(new Date().getDay()+1)%7,
 				theme: true,
-				allDayDefault: false
+				allDayDefault: false,
+				lazyFetching:true,
+				events: "/laconia/range/schedule/timeslot/"
 			})
 
 		});
