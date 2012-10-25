@@ -40,7 +40,7 @@ body
 
 .fc-cell-overlay 
 {
-	background: url("images/ui-bg_inset-soft_30_f58400_1x100.png") repeat-x scroll 50% 50% #F58400;
+	background: none #F58400;
 	opacity: 0.6;
 }
 

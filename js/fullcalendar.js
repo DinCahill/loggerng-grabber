@@ -1177,6 +1177,13 @@ function EventManager(options, _sources) {
 			delete event.date;
 		}
 		event._start = cloneDate(event.start = parseDate(event.start, ignoreTimezone));
+		
+		if (!event.end) {
+			(event.end = cloneDate(event._start)).setMinutes(event._start.getMinutes() + options.defaultEventMinutes);
+			//event.end = cloneDate(event.end = event.start.setMinutes(event.start.getMinutes() + options.defaultEventMinutes));
+			
+		}
+		
 		event.end = parseDate(event.end, ignoreTimezone);
 		if (event.end && event.end <= event.start) {
 			event.end = null;
@@ -3662,6 +3669,11 @@ function AgendaEventRenderer() {
 			dayEvents=[],
 			slotEvents=[];
 		for (i=0; i<len; i++) {
+			if(events[i].title===null || events[i].title===undefined)
+			{
+			  continue;
+			}
+			  
 			if (events[i].allDay) {
 				dayEvents.push(events[i]);
 			}else{

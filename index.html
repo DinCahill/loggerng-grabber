@@ -3,6 +3,7 @@
 <html>
 	<head>
 		<title>logger</title>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 		<link rel="stylesheet" type="text/css" href="css/fullcalendar.css" />
 		<link rel="stylesheet" type="text/css" href="css/ui-darkness/jquery-ui-1.9.0.custom.min.css" />
 		
@@ -12,135 +13,164 @@
 		<script type="text/javascript" src="js/jquery-ui-1.9.0.custom.min.hilight.fix.js"></script>
 		<script src="js/jquery-ui-timepicker-addon.js"></script>
 		<script type="text/javascript" src="js/fullcalendar.min.js"></script>
+		<script type="text/javascript" src="js/date-en-GB.js"></script>
+		<script type="text/javascript" src="js/date-extras.js"></script>
 		<script type="text/javascript" src="js/jquery.rule-1.0.2-min.js"></script>
 		
 		<script type="text/javascript">
-		var origTime = null;
-		var minTime = 61*60000;
-		
-		var showDisplayer = null;
-		var startDateTextBox = null;
-		var endDateTextBox = null;
-		var eventCheck = null;
-		$(function(){
+			var origTime = null;
+			var minTime = 61*60000;
+			
+			var showDisplayer = null;
+			var startDateTextBox = null;
+			var endDateTextBox = null;
+			var eventCheck = null;
+			$(function(){
 
-			//calendar
-			
-			showDisplayer = $("#calendar").fullCalendar({
-				header: {
-					left: "prev,next title",
-					center: "",
-					right: "today"
-					},
-				timeFormat: 'H:mm',
-				axisFormat: 'HH:mm',
-				defaultView: "agendaWeek",
-				allDaySlot: false,
-				slotMinutes: 60,
-				selectable:true,
-				firstDay:(new Date().getDay()+1)%7,
-				theme: true,
-				allDayDefault: false,
-				lazyFetching:true,
-				unselectAuto:false,
-				//events: "/laconia/range/schedule/timeslot/",
+				//calendar
 				
-				select:function( startDate, endDate, allDay, jsEvent, view ) {
-					if(endDate>(new Date()))
-					{
-						endDate=new Date()
-						updateStartEndCal(startDate, endDate);
-					}
-					updateStartEndBox(startDate, endDate);
-				},
-				
-				
-				
-				eventSources: [
+				showDisplayer = $("#calendar").fullCalendar({
+					header: {
+						left: "prev,next title",
+						center: "",
+						right: "today"
+						},
+					timeFormat: 'H:mm',
+					axisFormat: 'HH:mm',
+					defaultView: "agendaWeek",
+					allDaySlot: false,
+					slotMinutes: 60,
+					selectable:true,
+					firstDay:(new Date().getDay()+1)%7,
+					theme: true,
+					allDayDefault: false,
+					lazyFetching:true,
+					unselectAuto:false,
+					//events: "/laconia/range/schedule/timeslot/",
 					
-					{
-						url: '/laconia/range/schedule/timeslot/',
-						className:'event-style'
-					}
-				]
+					select:function( startDate, endDate, allDay, jsEvent, view ) {
+						if(endDate>(new Date()))
+						{
+							endDate=new Date()
+							updateStartEndCal(startDate, endDate);
+						}
+						updateStartEndBox(startDate, endDate);
+					},
+					
+					eventClick: function(calEvent, jsEvent, view) {
+						updateStartEndCal(calEvent.start, calEvent.end);
+					},
+					
+					eventSources: [
+						
+						{
+							url: '/laconia/range/schedule/timeslot/',
+							className:'event-style'
+						},
+						
+						{
+							events: [ // put the array in the `events` property
+							{
+								title  : null,
+								start  : '2012-10-20'
+							},
+							
+							{
+								title  : "asf",
+								start  : '2012-10-22 23:30'
+							}
+							],
+							className:'event-style'
+						}
+					]
+					
+				});
 				
+				//time pickers
+				startDateTextBox = $('#startTime').datetimepicker({
+					hideCalendar: true,
+					altFieldTimeOnly: false,
+					showButtonPanel: false,
+					timeOnlyTitle: "Start Time",
+					maxDateTime: (new Date()),
+					
+					onSelect: function(dateText, inst) {
+						if (endDateTextBox.val() != '') {
+							var testStartDate = startDateTextBox.datetimepicker('getDate');
+							var testEndDate = endDateTextBox.datetimepicker('getDate');
+							if (testStartDate >= testEndDate)
+								endDateTextBox.datetimepicker('setDate', testStartDate.add(1).minute());
+						}
+						else {
+							endDateTextBox.val(dateText);
+						}
+						updateStartEndBox();
+						updateStartEndCal();
+					}
+				});
+				
+				
+				endDateTextBox = $('#endTime').datetimepicker({
+					hideCalendar: true,
+					altFieldTimeOnly: false,
+					showButtonPanel: false,
+					timeOnlyTitle: "End Time",
+					maxDateTime: (new Date()),
+					
+					onSelect: function(dateText, inst) {
+						if (startDateTextBox.val() != '') {
+							var testStartDate = startDateTextBox.datetimepicker('getDate');
+							var testEndDate = endDateTextBox.datetimepicker('getDate');
+							if (testStartDate >= testEndDate)
+								startDateTextBox.datetimepicker('setDate', testEndDate.add(-1).minute());
+						}
+						else {
+							startDateTextBox.val(dateText);
+						}
+						updateStartEndBox();
+						updateStartEndCal();
+					}
+				});
+				
+				endDateTextBox.datetimepicker('setDate', (new Date()));
+				startDateTextBox.datetimepicker('setDate', (1).hour().ago()); 
+				updateStartEndCal();
+				
+				//buttons
+				//showDisplayer.find(".fc-header-right").prepend('<input type="checkbox" id="events" checked /><label for="events">Hide events</label>')
+				
+				var label = $('<label for="events">Hide events</label>');
+				showDisplayer.find(".fc-header-right").prepend(label);
+				showDisplayer.find(".fc-header-right .ui-corner-left").removeClass("ui-corner-left");
+				eventCheck = $(document.createElement("input"));
+				eventCheck[0].type="checkbox";
+				eventCheck[0].id="events";
+				eventCheck[0].checked=true;
+				showDisplayer.find(".fc-header-right").prepend(eventCheck);
+				eventCheck.button();
+				
+				label.removeClass( "ui-button ui-corner-all" ).addClass( "fc-button ui-corner-left" ).children(".ui-button-text").removeClass( "ui-button-text" ).addClass( "fc-button-content" );
+				
+				eventCheck.change(function(e){
+					eventCheck.button("option", "label", (eventCheck.is(":checked") ? "Hide" : "Show")+" events");
+					label.children(".ui-button-text").removeClass( "ui-button-text" ).addClass( "fc-button-content" );
+					
+					eventCheck.is(":checked")? $.rule('.event-style').append('visibility:visible') : $.rule('.event-style').append('visibility:hidden');
+				});
 			});
 			
-			//time pickers
-			startDateTextBox = $('#startTime').datetimepicker({
-				hideCalendar: true,
-				altFieldTimeOnly: false,
-				showButtonPanel: false,
-				timeOnlyTitle: "Start Time",
-				maxDateTime: (new Date()),
-				
-				onSelect: function(dateText, inst) {
-					if (endDateTextBox.val() != '') {
-						var testStartDate = startDateTextBox.datetimepicker('getDate');
-						var testEndDate = endDateTextBox.datetimepicker('getDate');
-						if (testStartDate > testEndDate)
-							endDateTextBox.datetimepicker('setDate', testStartDate);
-					}
-					else {
-						endDateTextBox.val(dateText);
-					}
-					updateStartEndBox();
-					updateStartEndCal();
-				}
-			});
-			
-			
-			endDateTextBox = $('#endTime').datetimepicker({
-				hideCalendar: true,
-				altFieldTimeOnly: false,
-				showButtonPanel: false,
-				timeOnlyTitle: "End Time",
-				maxDateTime: (new Date()),
-				
-				onSelect: function(dateText, inst) {
-					if (startDateTextBox.val() != '') {
-						var testStartDate = startDateTextBox.datetimepicker('getDate');
-						var testEndDate = endDateTextBox.datetimepicker('getDate');
-						if (testStartDate > testEndDate)
-							startDateTextBox.datetimepicker('setDate', testEndDate);
-					}
-					else {
-						startDateTextBox.val(dateText);
-					}
-					updateStartEndBox();
-					updateStartEndCal();
-				}
-			});
-			
-			//buttons
-			//showDisplayer.find(".fc-header-right").prepend('<input type="checkbox" id="events" checked /><label for="events">Hide events</label>')
-			
-			var label = $('<label for="events">Hide events</label>');
-			showDisplayer.find(".fc-header-right").prepend(label);
-			showDisplayer.find(".fc-header-right .ui-corner-left").removeClass("ui-corner-left");
-			eventCheck = $(document.createElement("input"));
-			eventCheck[0].type="checkbox";
-			eventCheck[0].id="events";
-			eventCheck[0].checked=true;
-			showDisplayer.find(".fc-header-right").prepend(eventCheck);
-			eventCheck.button();
-			
-			label.removeClass( "ui-button ui-corner-all" ).addClass( "fc-button ui-corner-left" ).children(".ui-button-text").removeClass( "ui-button-text" ).addClass( "fc-button-content" );
-			
-			eventCheck.change(function(e){
-				eventCheck.button("option", "label", (eventCheck.is(":checked") ? "Hide" : "Show")+" events");
-				label.children(".ui-button-text").removeClass( "ui-button-text" ).addClass( "fc-button-content" );
-				
-				eventCheck.is(":checked")? $.rule('.event-style').append('visibility:visible') : $.rule('.event-style').append('visibility:hidden');
-			});
-		});
 			function updateStartEndBox(start, end)
 			{
+				start=start||startDateTextBox.datetimepicker('getDate');
+				end=end||endDateTextBox.datetimepicker('getDate');
+				
 				startDateTextBox.datetimepicker('option', 'maxDateTime', new Date());
-				startDateTextBox.datetimepicker('setDate', start||startDateTextBox.datetimepicker('getDate'));
+				startDateTextBox.datetimepicker('option', 'timeText', start.format("%a %eS %b %Y"));
+				startDateTextBox.datetimepicker('setDate', start);
 				
 				endDateTextBox.datetimepicker('option', 'maxDateTime', new Date());
-				endDateTextBox.datetimepicker('setDate', end||endDateTextBox.datetimepicker('getDate'));
+				endDateTextBox.datetimepicker('option', 'timeText', end.format("%a %eS %b %Y"));
+				endDateTextBox.datetimepicker('setDate', end);
 			}
 			
 			function updateStartEndCal(start, end)
@@ -150,11 +180,12 @@
 		</script>
 	</head>
 	<body>
-		<div style="margin-right:auto; margin-left:auto;width:50%;">
+		<div style="margin-right:auto; margin-left:auto; width:1050px;">
 			<span id="startTime" style="display:inline-block;"></span>
 			<span id="endTime" style="display:inline-block"></span>
 			
-			
+			<br>
+			<br>
 			
 			<div id="calendar" style=""></div>
 		</div>
