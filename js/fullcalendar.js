@@ -3537,7 +3537,7 @@ function AgendaView(element, calendar, viewName) {
 			var dates;
 			hoverListener.start(function(cell, origCell) {
 				clearSelection();
-				if (cell && cell.col == origCell.col && !cellIsAllDay(cell)) {
+				if (cell && !cellIsAllDay(cell)) {
 					var d1 = cellDate(origCell);
 					var d2 = cellDate(cell);
 					dates = [

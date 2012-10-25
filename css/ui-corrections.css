@@ -1,0 +1,68 @@
+body
+{
+	background-color:black;
+	color:white;
+}
+
+.fc-agenda-slots td div
+{
+	height:23px;	
+}
+
+.ui-datepicker-inline dl
+{
+	margin: 10px 0px 10px 0px;
+}
+
+.ui-datepicker-inline dl dt
+{
+	clear: both;
+	display: inline-block;
+	float: left;
+}
+
+.ui-datepicker-inline dl dd
+{
+	clear: right;
+	margin-left: 70px;
+	margin-bottom:10px;
+}
+
+.ui_tpicker_time
+{
+	float:right;
+}
+
+#startTime, #endTime
+{
+
+}
+
+.fc-cell-overlay 
+{
+	background: url("images/ui-bg_inset-soft_30_f58400_1x100.png") repeat-x scroll 50% 50% #F58400;
+	opacity: 0.6;
+}
+
+.fc-event-time, .fc-event-bg
+{
+	display:none;
+}
+
+.event-style
+{
+	background: url("ui-darkness/images/ui-bg_glass_20_555555_1x400.png") repeat-x scroll 50% 50% #555555;
+    border: 1px solid #666666;
+    color: #EEEEEE;
+    font-weight: bold;
+}
+
+.event-style > .fc-event-inner
+{
+	border:0px;
+	background: none repeat scroll 0 0 transparent;
+}
+
+/*.ui-button-text-only .ui-button-text {
+    padding: 0.1em 0.5em;
+}*/
