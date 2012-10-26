@@ -141,6 +141,9 @@
 					
 					eventCheck.is(":checked")? $.rule('.event-style').append('visibility:visible') : $.rule('.event-style').append('visibility:hidden');
 				});
+				
+				// buttons
+				//$( "#buttons" ).;
 			});
 			
 			function updateStartEndBox(start, end)
@@ -165,8 +168,12 @@
 	</head>
 	<body>
 		<div style="margin-right:auto; margin-left:auto; width:1050px;">
-			<span id="startTime" style="display:inline-block;"></span>
-			<span id="endTime" style="display:inline-block"></span>
+			<span id="startTime" style="display:inline-block; width:33%; vertical-align: top;"></span>
+			<span id="endTime" style="display:inline-block; width:33%; vertical-align: top;"></span>
+			
+			<div id="buttons" style="display:inline-block; width:33%; vertical-align: top;">
+				
+			</div>
 			
 			<br>
 			<br>

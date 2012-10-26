@@ -4,6 +4,11 @@ body
 	color:white;
 }
 
+#buttons
+{
+	font-size: 62.5%;
+}
+
 .fc-agenda-slots td div
 {
 	height:23px;	
