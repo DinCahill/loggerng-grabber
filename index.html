@@ -61,6 +61,11 @@
 						updateStartEndCal(calEvent.start, calEvent.end);
 					},
 					
+					loading:function(){
+						
+						
+					},
+					
 					eventSources: [
 						{
 							url: '/laconia/range/schedule/timeslot/',
@@ -76,7 +81,7 @@
 					altFieldTimeOnly: false,
 					showButtonPanel: false,
 					timeOnlyTitle: "Start Time",
-					maxDateTime: (new Date()),
+					maxDateTime: (1).minute().ago(),
 					
 					onSelect: function(dateText, inst) {
 						if (endDateTextBox.val() != '') {
@@ -120,17 +125,18 @@
 				startDateTextBox.datetimepicker('setDate', (1).hour().ago()); 
 				updateStartEndCal();
 				
-				//buttons
-				//showDisplayer.find(".fc-header-right").prepend('<input type="checkbox" id="events" checked /><label for="events">Hide events</label>')
+				//hide-show button
 				
 				var label = $('<label for="events">Hide events</label>');
 				showDisplayer.find(".fc-header-right").prepend(label);
 				showDisplayer.find(".fc-header-right .ui-corner-left").removeClass("ui-corner-left");
-				eventCheck = $(document.createElement("input"));
-				eventCheck[0].type="checkbox";
-				eventCheck[0].id="events";
-				eventCheck[0].checked=true;
+				eventCheck = document.createElement("input");
+				eventCheck.type="checkbox";
+				eventCheck.id="events";
+				eventCheck.checked=true;
 				showDisplayer.find(".fc-header-right").prepend(eventCheck);
+				
+				eventCheck = $(eventCheck);
 				eventCheck.button();
 				
 				label.removeClass( "ui-button ui-corner-all" ).addClass( "fc-button ui-corner-left" ).children(".ui-button-text").removeClass( "ui-button-text" ).addClass( "fc-button-content" );
@@ -151,7 +157,7 @@
 				start=start||startDateTextBox.datetimepicker('getDate');
 				end=end||endDateTextBox.datetimepicker('getDate');
 				
-				startDateTextBox.datetimepicker('option', 'maxDateTime', new Date());
+				startDateTextBox.datetimepicker('option', 'maxDateTime', (1).minute().ago());
 				startDateTextBox.datetimepicker('option', 'timeText', start.format("%a %eS %b %Y"));
 				startDateTextBox.datetimepicker('setDate', start);
 				
