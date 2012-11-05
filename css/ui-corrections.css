@@ -2,6 +2,7 @@ body
 {
 	background-color:black;
 	color:white;
+	font-size: 62.5%;
 }
 
 #buttons
@@ -11,7 +12,7 @@ body
 
 .fc-agenda-slots td div
 {
-	height:23px;	
+	height:100%;	
 }
 
 .ui-datepicker-inline dl
@@ -29,18 +30,13 @@ body
 .ui-datepicker-inline dl dd
 {
 	clear: right;
-	margin-left: 70px;
+	margin-left: 80px;
 	margin-bottom:10px;
 }
 
 .ui_tpicker_time
 {
 	float:right;
-}
-
-#startTime, #endTime
-{
-
 }
 
 .fc-cell-overlay 
@@ -54,7 +50,9 @@ body
 	display:none;
 }
 
-.event-style
+.fc-event,
+.fc-agenda .fc-event-time,
+.fc-event a 
 {
 	background: url("ui-darkness/images/ui-bg_glass_20_555555_1x400.png") repeat-x scroll 50% 50% #555555;
     border: 1px solid #666666;
@@ -62,12 +60,25 @@ body
     font-weight: bold;
 }
 
-.event-style > .fc-event-inner
+.fc-event-inner
 {
-	border:0px;
+	border:0px none;
 	background: none repeat scroll 0 0 transparent;
 }
 
-/*.ui-button-text-only .ui-button-text {
-    padding: 0.1em 0.5em;
-}*/
+.fc-header-right .ui-selectmenu
+{
+	height:1.9em;
+	
+}
+
+.ui-selectmenu-status
+{
+	text-align: left;
+	padding-top:0.2em
+}
+
+.ui-selectmenu-menu
+{
+	z-index:10 !important;
+}

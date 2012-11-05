@@ -5,7 +5,11 @@
 		<title>logger</title>
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 		<link rel="stylesheet" type="text/css" href="css/fullcalendar.css" />
+		
+		<script type="text/javascript" src="js/heartcode-canvasloader.js"></script>
+		
 		<link rel="stylesheet" type="text/css" href="css/ui-darkness/jquery-ui-1.9.0.custom.min.css" />
+		<link rel="stylesheet" type="text/css" href="css/jquery.ui.selectmenu.css" />
 		
 		<link rel="stylesheet" type="text/css" href="css/ui-corrections.css" />
 		
@@ -15,7 +19,8 @@
 		<script type="text/javascript" src="js/fullcalendar.min.js"></script>
 		<script type="text/javascript" src="js/date-en-GB.js"></script>
 		<script type="text/javascript" src="js/date-extras.js"></script>
-		<script type="text/javascript" src="js/jquery.rule-1.0.2-min.js"></script>
+		
+		<script type="text/javascript" src="js/jquery.ui.selectmenu.js"></script>
 		
 		<script type="text/javascript">
 			var origTime = null;
@@ -25,6 +30,9 @@
 			var startDateTextBox = null;
 			var endDateTextBox = null;
 			var eventCheck = null;
+			
+			var throbber = null;
+			
 			$(function(){
 
 				//calendar
@@ -52,6 +60,7 @@
 						if(endDate>(new Date()))
 						{
 							endDate=new Date()
+							startDate = startDate>=endDate?(1).minute().ago():startDate;
 							updateStartEndCal(startDate, endDate);
 						}
 						updateStartEndBox(startDate, endDate);
@@ -61,18 +70,13 @@
 						updateStartEndCal(calEvent.start, calEvent.end);
 					},
 					
-					loading:function(){
-						
-						
+					loading: function(isLoading, view){
+						if(!throbber) {return;}
+						//isLoading?throbber.fadeIn(100):throbber.fadeOut(100);
+						throbber.toggle(isLoading);
 					},
 					
-					eventSources: [
-						{
-							url: '/laconia/range/schedule/timeslot/',
-							className:'event-style'
-						}
-					]
-					
+					events:'/laconia/range/schedule/timeslot/'
 				});
 				
 				//time pickers
@@ -127,9 +131,44 @@
 				
 				//hide-show button
 				
-				var label = $('<label for="events">Hide events</label>');
-				showDisplayer.find(".fc-header-right").prepend(label);
 				showDisplayer.find(".fc-header-right .ui-corner-left").removeClass("ui-corner-left");
+				
+				eventCheck = $(document.createElement("select"));
+				
+				var options = [
+					{label:"None"},
+					{label:"Requests"},
+					{label:"Shows", select:true, event:"/laconia/range/schedule/timeslot/"}
+					];
+				
+				for(var i = 0; i < options.length; i++)
+				{
+					if(!options[i].label) {continue;}
+					var atr = ' value="'+(options[i].event?options[i].event:"")+'"';
+					
+					atr += options[i].select?' selected="selected"':"";
+					
+					eventCheck.prepend("<option"+atr+">"+options[i].label+"</option>");
+				}
+				
+				showDisplayer.find(".fc-header-right").prepend(eventCheck);
+				eventCheck.selectmenu({
+					menuWidth: 120,
+					close:function() {
+						showDisplayer.find(".fc-header-right .ui-selectmenu").removeClass( "ui-corner-all" ).addClass("ui-corner-left");
+					},
+					open:function() {
+						showDisplayer.find(".fc-header-right .ui-selectmenu").removeClass( "ui-corner-top ui-corner-left" );
+					},
+					
+					change:updateEventCheck
+				});
+				showDisplayer.find(".fc-header-right .ui-selectmenu").removeClass( "ui-button ui-corner-all" ).addClass( "fc-button ui-corner-left ui-corner-tl" ).css("width", "120px");
+				
+				
+				/*var label = $('<label for="events">Hide events</label>');
+				showDisplayer.find(".fc-header-right").prepend(label);
+				
 				eventCheck = document.createElement("input");
 				eventCheck.type="checkbox";
 				eventCheck.id="events";
@@ -141,16 +180,49 @@
 				
 				label.removeClass( "ui-button ui-corner-all" ).addClass( "fc-button ui-corner-left" ).children(".ui-button-text").removeClass( "ui-button-text" ).addClass( "fc-button-content" );
 				
-				eventCheck.change(function(e){
-					eventCheck.button("option", "label", (eventCheck.is(":checked") ? "Hide" : "Show")+" events");
-					label.children(".ui-button-text").removeClass( "ui-button-text" ).addClass( "fc-button-content" );
-					
-					eventCheck.is(":checked")? $.rule('.event-style').append('visibility:visible') : $.rule('.event-style').append('visibility:hidden');
-				});
+				label.click(function(event) {
+					event.stopImmediatePropagation();
+					eventCheck.button( "refresh" );
+				});*/
+				
+				//eventCheck.change(updateEventCheck);
+				
+				//throbber
+				throbber = $('<span id="throbberCont"></span>');
+				showDisplayer.find(".fc-header-right").prepend(throbber);
+				throbber.hide();
+				
+				var throbberCan = new CanvasLoader('throbberCont', {useParent:true});
+				throbberCan.setColor('#f58300'); // default is '#000000'
+				throbberCan.setDiameter(25); // default is 40
+				
+				throbber.children().css({'padding-right': '5px', 'padding-top': '5px'});
 				
 				// buttons
 				//$( "#buttons" ).;
+				
+				//$('#select').selectmenu({
+				//	menuWidth: 400
+				//});
+				
+				$("#s").click(function() {
+					$("body").css("background-image", "url(http://bcchang.com/immersive_blog/wp-content/uploads/2009/10/fieldstone-c.jpg)");
+				})
 			});
+			
+			function updateEventCheck(index, option)
+			{
+				showDisplayer.fullCalendar('removeEventSource');
+				if(option.value)
+				{
+					showDisplayer.fullCalendar( 'addEventSource', option.value );
+				}
+				
+				//eventCheck.button("option", "label", (eventCheck.is(":checked") ? "Hide" : "Show")+" events");
+				//$('[for="'+eventCheck[0].id+'"]').children(".ui-button-text").removeClass( "ui-button-text" ).addClass( "fc-button-content" );
+				
+				//eventCheck.is(":checked")? $.rule('.event-style').append('visibility:visible') : $.rule('.event-style').append('visibility:hidden');
+			}
 			
 			function updateStartEndBox(start, end)
 			{
@@ -173,12 +245,12 @@
 		</script>
 	</head>
 	<body>
-		<div style="margin-right:auto; margin-left:auto; width:1050px;">
+		<div id="s" style="width:1px; height:1px; position:absolute; top:0px; left:0px;"></div>
+		<div style="margin-right:auto; margin-left:auto; width:1050px; font-size: 160%;">
 			<span id="startTime" style="display:inline-block; width:33%; vertical-align: top;"></span>
 			<span id="endTime" style="display:inline-block; width:33%; vertical-align: top;"></span>
 			
 			<div id="buttons" style="display:inline-block; width:33%; vertical-align: top;">
-				
 			</div>
 			
 			<br>
