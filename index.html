@@ -23,9 +23,10 @@
 		<script type="text/javascript" src="js/jquery.ui.selectmenu.js"></script>
 		
 		<script type="text/javascript">
+			//some constants
 			var origTime = null;
 			var minTime = 61*60000;
-			
+			//A multitude of widgets
 			var showDisplayer = null;
 			var startDateTextBox = null;
 			var endDateTextBox = null;
@@ -54,8 +55,7 @@
 					allDayDefault: false,
 					lazyFetching:true,
 					unselectAuto:false,
-					//events: "/laconia/range/schedule/timeslot/",
-					
+					//on a calender selection validate that the time is not in the past and update the time selectors
 					select:function( startDate, endDate, allDay, jsEvent, view ) {
 						if(endDate>(new Date()))
 						{
@@ -199,15 +199,37 @@
 				throbber.children().css({'padding-right': '5px', 'padding-top': '5px'});
 				
 				// buttons
-				//$( "#buttons" ).;
+				$("#fileType").selectmenu({
+						close:function() {
+							$("#fileType").selectmenu("widget").find(".ui-selectmenu").removeClass( "ui-corner-all" ).addClass("ui-corner-right");
+						},
+						open:function() {
+							$("#fileType").selectmenu("widget").find(".ui-corner-top").removeClass( "ui-corner-top ui-corner-right" ).addClass("ui-corner-tr");
+						}
+					}
+					
+				);
 				
-				//$('#select').selectmenu({
-				//	menuWidth: 400
-				//});
+				$("#file").addClass("ui-buttonset");
+				$("#fileNameCont").button().css({"vertical-align":"top", "cursor":"text","z-index": "2"}).click(function(){$("#fileName").focus();});
+				//$("#file").buttonset();
+				$("#fileType").selectmenu("widget").find(".ui-selectmenu-status").css({"padding-left":"5px","padding-top":"5px"});
+				$("#fileNameCont *").css({"padding-left":"0px","padding-right":"0px"});
+				$("#fileName").css({"height":"1.4em","padding":"0px","border":"0px","margin-left":"0px","margin-right":"0px", "background-color":"rgba(255,255,255,0.6)"});
+				
+				$("#file .ui-corner-all").removeClass( "ui-corner-all" );
+				
+				$("#file :first").addClass("ui-corner-left");
+				$("#file :last").addClass("ui-corner-right");
 				
 				$("#s").click(function() {
 					$("body").css("background-image", "url(http://bcchang.com/immersive_blog/wp-content/uploads/2009/10/fieldstone-c.jpg)");
 				})
+				
+				//progress
+				$( "#progressbar" ).progressbar({value: 37});
+				$( "#progressbar1" ).progressbar({value: 37});
+				$( "#progressbar2" ).progressbar({value: 37});
 			});
 			
 			function updateEventCheck(index, option)
@@ -251,9 +273,23 @@
 			<span id="endTime" style="display:inline-block; width:33%; vertical-align: top;"></span>
 			
 			<div id="buttons" style="display:inline-block; width:33%; vertical-align: top;">
-			</div>
+				<div id="file">
+					<div id="fileNameCont">
+						<input type="text" id="fileName" name="fileName" maxlength="30"></input>
+					</div>
+					<select id="fileType" name="fileType">
+						<option value=".mp3" selected="selected">.mp3</option>
+						<option value=".flac">.flac</option>
+						<option value=".ogg">.ogg</option>
+					</select>
+				</div>
 			
+			</div>
 			<br>
+			<br>
+			<div id="progressbar"><span class="caption">Loading...please wait</span></div>
+			<div id="progressbar1"><span class="caption">Loading...please wait</span></div>
+			<div id="progressbar2"><span class="caption">Loading...please wait</span></div>
 			<br>
 			
 			<div id="calendar" style=""></div>

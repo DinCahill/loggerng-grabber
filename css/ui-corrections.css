@@ -82,3 +82,28 @@ body
 {
 	z-index:10 !important;
 }
+
+.select-text-ui
+{
+	text-align : left;
+	outline : none;
+	cursor : text;
+	
+}
+
+
+.ui-progressbar {
+	height: 10px;
+}
+
+.ui-progressbar .ui-progressbar-value {
+	margin-top: -0.6em;
+	background-image : url("images/progress.gif");
+}
+
+.ui-progressbar span.caption {
+	font-size:0.5em;
+	margin-top:-3px;
+	display: block;
+	text-align: center;
+}
