@@ -23,20 +23,19 @@
 		<script type="text/javascript" src="js/jquery.ui.selectmenu.js"></script>
 		
 		<script type="text/javascript">
-			//some constants
-			var origTime = null;
+			// a constants
 			var minTime = 61*60000;
-			//A multitude of widgets
+			
+			// a multitude of widgets
 			var showDisplayer = null;
 			var startDateTextBox = null;
 			var endDateTextBox = null;
 			var eventCheck = null;
-			
 			var throbber = null;
 			
 			$(function(){
 
-				//calendar
+				// calendar
 				
 				showDisplayer = $("#calendar").fullCalendar({
 					header: {
@@ -50,43 +49,55 @@
 					allDaySlot: false,
 					slotMinutes: 60,
 					selectable:true,
-					firstDay:(new Date().getDay()+1)%7,
+					firstDay:(new Date().getDay()+1)%7, // set the current day to the far right so the full week can be seen
 					theme: true,
 					allDayDefault: false,
 					lazyFetching:true,
-					unselectAuto:false,
-					//on a calender selection validate that the time is not in the past and update the time selectors
+					unselectAuto:false, // dont clear the selection. Ever.
+					
+					// on a calendar selection validate that the time is not in the past and update the time selectors
 					select:function( startDate, endDate, allDay, jsEvent, view ) {
-						if(endDate>(new Date()))
+						if(endDate>(new Date())) // validate
 						{
 							endDate=new Date()
 							startDate = startDate>=endDate?(1).minute().ago():startDate;
 							updateStartEndCal(startDate, endDate);
 						}
-						updateStartEndBox(startDate, endDate);
+						updateStartEndBox(startDate, endDate); // update
 					},
 					
+					// if an event is clicked then select it
 					eventClick: function(calEvent, jsEvent, view) {
 						updateStartEndCal(calEvent.start, calEvent.end);
 					},
 					
+					// show a loading 'throbber' when making an ajax request
 					loading: function(isLoading, view){
 						if(!throbber) {return;}
-						//isLoading?throbber.fadeIn(100):throbber.fadeOut(100);
+						// isLoading?throbber.fadeIn(100):throbber.fadeOut(100);
 						throbber.toggle(isLoading);
 					},
 					
-					events:'/laconia/range/schedule/timeslot/'
+					events:'/laconia/range/schedule/timeslot/' // default event
 				});
 				
-				//time pickers
+				// time pickers
+				
+				// time picker for the start of selection
 				startDateTextBox = $('#startTime').datetimepicker({
-					hideCalendar: true,
+					/* hideCalendar is a custom property!
+					 * The built in method for removing the calendar part of the
+					 * datetimepicker causes it to only remember the time, and
+					 * not the date, this is needed because otherwise maxDateTime
+					 * limits the time for all days */
+					hideCalendar: true, 
 					altFieldTimeOnly: false,
-					showButtonPanel: false,
-					timeOnlyTitle: "Start Time",
-					maxDateTime: (1).minute().ago(),
+					showButtonPanel: false, // the buttons pannel only has 'today' on it
+					timeOnlyTitle: "Start Time", // this gets replaced with the current date
+					maxDateTime: (1).minute().ago(), 
 					
+					// when time is altered make a test to see if it is grater than the end time
+					// if so alter the end time. Then update everything
 					onSelect: function(dateText, inst) {
 						if (endDateTextBox.val() != '') {
 							var testStartDate = startDateTextBox.datetimepicker('getDate');
@@ -102,14 +113,15 @@
 					}
 				});
 				
-				
+				// time picker for the start of selection
 				endDateTextBox = $('#endTime').datetimepicker({
-					hideCalendar: true,
+					hideCalendar: true, 
 					altFieldTimeOnly: false,
 					showButtonPanel: false,
 					timeOnlyTitle: "End Time",
 					maxDateTime: (new Date()),
 					
+					// as startDateTextBox, only if it's less than the start time
 					onSelect: function(dateText, inst) {
 						if (startDateTextBox.val() != '') {
 							var testStartDate = startDateTextBox.datetimepicker('getDate');
@@ -125,16 +137,18 @@
 					}
 				});
 				
+				// set initial dates to the past hour
 				endDateTextBox.datetimepicker('setDate', (new Date()));
-				startDateTextBox.datetimepicker('setDate', (1).hour().ago()); 
+				startDateTextBox.datetimepicker('setDate', (1).hour().ago());
 				updateStartEndCal();
 				
-				//hide-show button
+				// events dropdown
 				
 				showDisplayer.find(".fc-header-right .ui-corner-left").removeClass("ui-corner-left");
 				
 				eventCheck = $(document.createElement("select"));
 				
+				// this is an array of objects for easily editing the dropdown menu
 				var options = [
 					{label:"None"},
 					{label:"Requests"},
@@ -143,17 +157,22 @@
 				
 				for(var i = 0; i < options.length; i++)
 				{
-					if(!options[i].label) {continue;}
-					var atr = ' value="'+(options[i].event?options[i].event:"")+'"';
+					if(!options[i].label) {continue;} // skip empty options
+					
+					var atr = ' value="'+(options[i].event||"")+'"';
 					
 					atr += options[i].select?' selected="selected"':"";
 					
 					eventCheck.prepend("<option"+atr+">"+options[i].label+"</option>");
 				}
 				
-				showDisplayer.find(".fc-header-right").prepend(eventCheck);
+				showDisplayer.find(".fc-header-right").prepend(eventCheck); // add the select to the calendar
+				
+				// make the select a UI selectmenu
 				eventCheck.selectmenu({
 					menuWidth: 120,
+					
+					// the menu tries to re-round all its corners when ever it opens or closes.
 					close:function() {
 						showDisplayer.find(".fc-header-right .ui-selectmenu").removeClass( "ui-corner-all" ).addClass("ui-corner-left");
 					},
@@ -165,29 +184,7 @@
 				});
 				showDisplayer.find(".fc-header-right .ui-selectmenu").removeClass( "ui-button ui-corner-all" ).addClass( "fc-button ui-corner-left ui-corner-tl" ).css("width", "120px");
 				
-				
-				/*var label = $('<label for="events">Hide events</label>');
-				showDisplayer.find(".fc-header-right").prepend(label);
-				
-				eventCheck = document.createElement("input");
-				eventCheck.type="checkbox";
-				eventCheck.id="events";
-				eventCheck.checked=true;
-				showDisplayer.find(".fc-header-right").prepend(eventCheck);
-				
-				eventCheck = $(eventCheck);
-				eventCheck.button();
-				
-				label.removeClass( "ui-button ui-corner-all" ).addClass( "fc-button ui-corner-left" ).children(".ui-button-text").removeClass( "ui-button-text" ).addClass( "fc-button-content" );
-				
-				label.click(function(event) {
-					event.stopImmediatePropagation();
-					eventCheck.button( "refresh" );
-				});*/
-				
-				//eventCheck.change(updateEventCheck);
-				
-				//throbber
+				// throbber - that circular spiny thing that tells you something is happening
 				throbber = $('<span id="throbberCont"></span>');
 				showDisplayer.find(".fc-header-right").prepend(throbber);
 				throbber.hide();
@@ -199,6 +196,8 @@
 				throbber.children().css({'padding-right': '5px', 'padding-top': '5px'});
 				
 				// buttons
+				
+				// a select menu for audio file type
 				$("#fileType").selectmenu({
 						close:function() {
 							$("#fileType").selectmenu("widget").find(".ui-selectmenu").removeClass( "ui-corner-all" ).addClass("ui-corner-right");
@@ -210,60 +209,86 @@
 					
 				);
 				
-				$("#file").addClass("ui-buttonset");
-				$("#fileNameCont").button().css({"vertical-align":"top", "cursor":"text","z-index": "2"}).click(function(){$("#fileName").focus();});
-				//$("#file").buttonset();
+				// ajust the text in the file type dropdown to align with the text in the file name input
 				$("#fileType").selectmenu("widget").find(".ui-selectmenu-status").css({"padding-left":"5px","padding-top":"5px"});
+				
+				
+				// "$("#file").buttonset();" brakes things so manualy do it 
+				$("#file").addClass("ui-buttonset");
+				
+				// the wrapper button for the file name input +  extra css + give focus
+				$("#fileNameCont").button().css({"vertical-align":"top", "cursor":"text","z-index": "2"}).click(function(){$("#fileName").focus();});
+				
+				// remove left and right padding on everything in in the button
 				$("#fileNameCont *").css({"padding-left":"0px","padding-right":"0px"});
+				// the text box for inputting a file name's extra css
 				$("#fileName").css({"height":"1.4em","padding":"0px","border":"0px","margin-left":"0px","margin-right":"0px", "background-color":"rgba(255,255,255,0.6)"});
 				
+				// remove rounded corners from all the buttons
 				$("#file .ui-corner-all").removeClass( "ui-corner-all" );
 				
+				// add left and right rounded corners to the first and last button
 				$("#file :first").addClass("ui-corner-left");
 				$("#file :last").addClass("ui-corner-right");
 				
+				// does a thin. shhhhhh.
 				$("#s").click(function() {
 					$("body").css("background-image", "url(http://bcchang.com/immersive_blog/wp-content/uploads/2009/10/fieldstone-c.jpg)");
 				})
 				
-				//progress
+				// progress
 				$( "#progressbar" ).progressbar({value: 37});
 				$( "#progressbar1" ).progressbar({value: 37});
 				$( "#progressbar2" ).progressbar({value: 37});
 			});
 			
+			// some general utility functions
+			
+			// remove the calendar's old source of events and (if specified) add a new one
 			function updateEventCheck(index, option)
 			{
+				/* this is a custom alteration!
+				 * normaly removeEventSource requires a paramater of what event source to remove,
+				 * however it has been altered so if none is given it will remove all event sources */
 				showDisplayer.fullCalendar('removeEventSource');
 				if(option.value)
 				{
-					showDisplayer.fullCalendar( 'addEventSource', option.value );
+					showDisplayer.fullCalendar( 'addEventSource', option.value ); // add the new event source
 				}
-				
-				//eventCheck.button("option", "label", (eventCheck.is(":checked") ? "Hide" : "Show")+" events");
-				//$('[for="'+eventCheck[0].id+'"]').children(".ui-button-text").removeClass( "ui-button-text" ).addClass( "fc-button-content" );
-				
-				//eventCheck.is(":checked")? $.rule('.event-style').append('visibility:visible') : $.rule('.event-style').append('visibility:hidden');
 			}
 			
+			//update the start and end datetimepickers
 			function updateStartEndBox(start, end)
 			{
+				// if no start or end time are passed in then default to the current
 				start=start||startDateTextBox.datetimepicker('getDate');
 				end=end||endDateTextBox.datetimepicker('getDate');
 				
+				// update the max time of the start datetimepicker to one minute ago
+				// (to maintain a gap of 1 minute between the start and end times)
 				startDateTextBox.datetimepicker('option', 'maxDateTime', (1).minute().ago());
-				startDateTextBox.datetimepicker('option', 'timeText', start.format("%a %eS %b %Y"));
-				startDateTextBox.datetimepicker('setDate', start);
 				
+				// update the text next to the time of the start datetimepicker to the current selected date
+				startDateTextBox.datetimepicker('option', 'timeText', start.format("%a %eS %b %Y"));
+				
+				// update the max time of the end datetimepicker to the current
 				endDateTextBox.datetimepicker('option', 'maxDateTime', new Date());
+				
+				// update the text next to the time of the end datetimepicker to the current selected date
 				endDateTextBox.datetimepicker('option', 'timeText', end.format("%a %eS %b %Y"));
+				
+				// now change the date and time
+				startDateTextBox.datetimepicker('setDate', start);
 				endDateTextBox.datetimepicker('setDate', end);
 			}
 			
+			// selects the inputed time (defaulting to the datetimepickers when no specified)
 			function updateStartEndCal(start, end)
 			{
 				showDisplayer.fullCalendar( 'select', start||startDateTextBox.datetimepicker('getDate'), end||endDateTextBox.datetimepicker('getDate'), false );
 			}
+			
+			// HTML follows
 		</script>
 	</head>
 	<body>
@@ -275,7 +300,7 @@
 			<div id="buttons" style="display:inline-block; width:33%; vertical-align: top;">
 				<div id="file">
 					<div id="fileNameCont">
-						<input type="text" id="fileName" name="fileName" maxlength="30"></input>
+						<input type="text" id="fileName" name="fileName" maxlength="64"></input>
 					</div>
 					<select id="fileType" name="fileType">
 						<option value=".mp3" selected="selected">.mp3</option>
