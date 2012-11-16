@@ -22,6 +22,8 @@
 		
 		<script type="text/javascript" src="js/jquery.ui.selectmenu.js"></script>
 		
+		<script type="text/javascript" src="js/jquery.placeholder.js"></script>
+		
 		<script type="text/javascript">
 			// a constants
 			var minTime = 61*60000;
@@ -217,12 +219,12 @@
 				$("#file").addClass("ui-buttonset");
 				
 				// the wrapper button for the file name input +  extra css + give focus
-				$("#fileNameCont").button().css({"vertical-align":"top", "cursor":"text","z-index": "2"}).click(function(){$("#fileName").focus();});
+				$("#fileNameCont").button().css({"vertical-align":"top", "cursor":"text","z-index": "2","margin-right":"-2px"}).click(function(){$("#fileName").focus();});
 				
 				// remove left and right padding on everything in in the button
 				$("#fileNameCont *").css({"padding-left":"0px","padding-right":"0px"});
 				// the text box for inputting a file name's extra css
-				$("#fileName").css({"height":"1.4em","padding":"0px","border":"0px","margin-left":"0px","margin-right":"0px", "background-color":"rgba(255,255,255,0.6)"});
+				$("#fileName").css({"height":"1.4em","width": "150px","padding":"0px","border":"0px","margin-left":"0px","margin-right":"0px", "background-color":"rgba(255,255,255,0.6)"});
 				
 				// remove rounded corners from all the buttons
 				$("#file .ui-corner-all").removeClass( "ui-corner-all" );
@@ -280,6 +282,8 @@
 				// now change the date and time
 				startDateTextBox.datetimepicker('setDate', start);
 				endDateTextBox.datetimepicker('setDate', end);
+				
+				$("#fileName").attr("placeholder", start.format("U")+"-"+end.format("U"));
 			}
 			
 			// selects the inputed time (defaulting to the datetimepickers when no specified)
