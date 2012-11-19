@@ -22,8 +22,6 @@
 		
 		<script type="text/javascript" src="js/jquery.ui.selectmenu.js"></script>
 		
-		<script type="text/javascript" src="js/jquery.placeholder.js"></script>
-		
 		<script type="text/javascript">
 			// a constants
 			var minTime = 61*60000;
@@ -219,7 +217,7 @@
 				$("#file").addClass("ui-buttonset");
 				
 				// the wrapper button for the file name input +  extra css + give focus
-				$("#fileNameCont").button().css({"vertical-align":"top", "cursor":"text","z-index": "2","margin-right":"-2px"}).click(function(){$("#fileName").focus();});
+				$("#fileNameCont").button().css({"vertical-align":"top", "cursor":"text","z-index": "2","margin-right":"-0.2em"}).click(function(){$("#fileName").focus();});
 				
 				// remove left and right padding on everything in in the button
 				$("#fileNameCont *").css({"padding-left":"0px","padding-right":"0px"});
