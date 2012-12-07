@@ -1,4 +1,4 @@
-<?php require_once /usr/local/shibbobleh/client/shibbobleh_client.php ?>
+<?php require_once "/usr/local/shibbobleh/client/shibbobleh_client.php" ?>
 <!DOCTYPE html> 
 <html>
 	<head>
