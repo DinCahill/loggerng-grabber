@@ -1,5 +1,5 @@
+<?php require_once shibbobleh_client.php ?>
 <!DOCTYPE html> 
-
 <html>
 	<head>
 		<title>logger</title>
@@ -9,7 +9,7 @@
 			WebFontConfig = {
 				google: { families: [ 'Open+Sans::latin' ] },
 				active:function(){
-					// the calendar has problems with drawing the google font initily, so redraw it
+					// the calendar has problems with drawing the google font initially, so redraw it
 					showDisplayer.fullCalendar('render');
 				}
 			};
