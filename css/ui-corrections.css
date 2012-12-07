@@ -5,9 +5,19 @@ body
 	font-size: 62.5%;
 }
 
+.ui-widget
+{
+	font-family:'Open Sans';
+}
+
+.ui-state-hover
+{
+	z-index:2;
+}
+
 #buttons
 {
-	font-size: 62.5%;
+	font-size:62.5%;
 }
 
 .fc-agenda-slots td div
@@ -88,7 +98,6 @@ body
 	text-align : left;
 	outline : none;
 	cursor : text;
-	
 }
 
 
@@ -102,8 +111,9 @@ body
 }
 
 .ui-progressbar span.caption {
+	margin-top:-2px;
 	font-size:0.5em;
-	margin-top:-3px;
 	display: block;
 	text-align: center;
+	height:11px;
 }
