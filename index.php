@@ -45,7 +45,7 @@
 		<!-- You know what we need. More plugins! -->
 		<script type="text/javascript" src="js/noty/jquery.noty.js"></script>
 		<script type="text/javascript" src="js/noty/layouts/bottomRightWithHideAndUI.js"></script>
-		<script type="text/javascript" src="js/noty/themes/jQueryUI.js"></script>
+		<script type="text/javascript" src="js/noty/themes/jQueryUIIntegration.js"></script>
 		
 		
 		<script type="text/javascript">
