@@ -1,6 +1,6 @@
 body
 {
-	background-color:black;
+	background:#141414;
 	color:white;
 	font-size: 62.5%;
 }
@@ -18,6 +18,21 @@ body
 #buttons
 {
 	font-size:62.5%;
+}
+
+#buttons fieldset
+{
+	border: 0 none;
+    display: inline;
+    margin: 0;
+	padding: 0;
+	vertical-align: top;
+}
+
+#buttons input.ui-button {
+    padding: 3px 1em;
+	margin: 0;
+	line-height:18px;
 }
 
 .fc-agenda-slots td div
@@ -102,18 +117,39 @@ body
 
 
 .ui-progressbar {
+	position:relative;
 	height: 10px;
 }
 
 .ui-progressbar .ui-progressbar-value {
-	margin-top: -0.55em;
 	background-image : url("images/progress.gif");
 }
 
-.ui-progressbar span.caption {
-	margin-top:-2px;
-	font-size:0.5em;
+.ui-progressbar .caption {
+	line-height:7px;
+	font-size:9px;
 	display: block;
 	text-align: center;
 	height:11px;
+	position:absolute;
+	width:100%;
 }
+
+.ui-icon-before:before
+{
+	background-image: url("ui-darkness/images/ui-icons_cccccc_256x240.png");
+    content: "";
+    height: 16px;
+    width: 16px;
+}
+
+.ui-icon-before-leftCenter:before
+{
+	position: absolute;
+	left: 0;
+    top: 50%;
+	margin-top: -8px;
+}
+
+.ui-icon-before-triangle-1-e:before { background-position: -32px -16px; }
+.ui-icon-before-triangle-1-w:before { background-position: -96px -16px; }

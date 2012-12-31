@@ -1,4 +1,4 @@
-<?php require_once "shibbobleh_client.php" ?>
+﻿<?php require_once "shibbobleh_client.php" ?>
 <!DOCTYPE html> 
 <html>
 	<head>
@@ -42,6 +42,12 @@
 		
 		<script type="text/javascript" src="js/jquery.ui.selectmenu.js"></script>
 		
+		<!-- You know what we need. More plugins! -->
+		<script type="text/javascript" src="js/noty/jquery.noty.js"></script>
+		<script type="text/javascript" src="js/noty/layouts/bottomRightWithHideAndUI.js"></script>
+		<script type="text/javascript" src="js/noty/themes/jQueryUI.js"></script>
+		
+		
 		<script type="text/javascript">
 			// a constants
 			var minTime = 61*60000;
@@ -54,8 +60,12 @@
 			var throbber = null;
 			
 			$(function(){
-				// calendar
+				noty({layout: 'bottomRight', text: '<div id="progressbar"><span class="caption">Loading...please wait</span></div>', closeWith: ["button"]});
+				noty({layout: 'bottomRight', text: '<div id="progressbar1"><span class="caption">Loading...please wait</span></div>', closeWith: ["button"]});
+				noty({layout: 'bottomRight', text: '<div id="progressbar2"><span class="caption">Loading...please wait</span></div>', closeWith: ["button"]});
+				$("#testDiv").button();
 				
+				// calendar
 				showDisplayer = $("#calendar").fullCalendar({
 					header: {
 						left: "prev,next title",
@@ -96,6 +106,18 @@
 						if(!throbber) {return;}
 						// isLoading?throbber.fadeIn(100):throbber.fadeOut(100);
 						throbber.toggle(isLoading);
+					},
+					
+					eventAfterRender: function(event, element) {
+						element.prop("title","");
+						element.tooltip({
+							content: event.title,
+							hide:100,
+							show: {
+								delay: 750
+							}
+						});
+						
 					},
 					
 					events:'/laconia/range/schedule/timeslot/' // default event
@@ -247,9 +269,12 @@
 				// remove rounded corners from all the buttons
 				$("#file .ui-corner-all").removeClass( "ui-corner-all" );
 				
+				//make the request button a button!
+				$("#logRequest").button();
+				
 				// add left and right rounded corners to the first and last button
-				$("#file :first").addClass("ui-corner-left");
-				$("#file :last").addClass("ui-corner-right");
+				$("#file fieldset .ui-widget:first").addClass("ui-corner-left");
+				$("#file fieldset .ui-widget:last").addClass("ui-corner-right");
 				
 				// does a thing. shhhhhh.
 				$("#s").click(function() {
@@ -314,28 +339,33 @@
 	</head>
 	<body>
 		<div id="s" style="width:1px; height:1px; position:absolute; top:0px; left:0px;"></div>
-		<div style="margin-right:auto; margin-left:auto; width:1050px; font-size: 160%;">
+		<div id="cont" style="margin-right:auto; margin-left:auto; width:1050px; font-size: 160%;">
 			<span id="startTime" style="display:inline-block; width:33%; vertical-align: top;"></span>
 			<span id="endTime" style="display:inline-block; width:33%; vertical-align: top;"></span>
 			
 			<div id="buttons" style="display:inline-block; width:33%; vertical-align: top;">
-				<div id="file">
-					<div id="fileNameCont">
-						<input type="text" id="fileName" name="fileName" maxlength="64"></input>
+				<form>
+					<div id="file">
+						<fieldset>
+							<div id="fileNameCont">
+								<input type="text" id="fileName" name="fileName" maxlength="64">
+							</div>
+							<select id="fileType" name="fileType">
+								<option value=".mp3" selected="selected">.mp3</option>
+								<option value=".flac">.flac</option>
+								<option value=".ogg">.ogg</option>
+							</select>
+						</fieldset>
+						<input id="logRequest" type="submit" value="Make Request">
 					</div>
-					<select id="fileType" name="fileType">
-						<option value=".mp3" selected="selected">.mp3</option>
-						<option value=".flac">.flac</option>
-						<option value=".ogg">.ogg</option>
-					</select>
-				</div>
-			
+					
+					<div>
+						
+					</div>
+				</form>
 			</div>
+			
 			<br>
-			<br>
-			<div id="progressbar"><span class="caption">Loading...please wait</span></div>
-			<div id="progressbar1"><span class="caption">Loading...please wait</span></div>
-			<div id="progressbar2"><span class="caption">Loading...please wait</span></div>
 			<br>
 			
 			<div id="calendar" style=""></div>
