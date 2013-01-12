@@ -10,9 +10,8 @@
 			selector: 'ul#noty_bottomRight_layout_container',
 			style: function() {
 				
-				$(this).addClass("ui-state-default ui-icon-before ui-icon-before-leftCenter ui-icon-before-triangle-1-e ui-corner-all");
-				
-				$(this).css({
+				$(this).not(".ui-state-default").addClass("ui-state-default ui-icon-before ui-icon-before-leftCenter ui-icon-before-triangle-1-e ui-corner-all").css(
+				{
 					bottom: 20,
 					right: 0,
 					position: 'fixed',
@@ -26,12 +25,6 @@
 					border: '0px none',
 					overflow: 'hidden'
 				});
-
-				if (window.innerWidth < 600) {
-					$(this).css({
-						right: 5
-					});
-				}
 				
 				$(this).off(".notyHider").on({
 					"click.notyHider":function(e) {

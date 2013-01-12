@@ -34,10 +34,10 @@ if (typeof Object.create !== 'function') {
             delete options.layout;
             delete options.theme;
 
-            this.options = $.extend({}, this.options, this.options.layout.options);
+            this.options = $.extend(true, {}, this.options, this.options.layout.options);
             this.options.id = 'noty_' + (new Date().getTime() * Math.floor(Math.random() * 1000000));
 
-            this.options = $.extend({}, this.options, options);
+            this.options = $.extend(true, {}, this.options, options);
 
             // Build the noty dom initial structure
             this._build();
@@ -50,7 +50,9 @@ if (typeof Object.create !== 'function') {
 
             // Generating noty bar
             var $bar = $('<div class="noty_bar"></div>').attr('id', this.options.id);
-            $bar.append(this.options.template).find('.noty_text').html(this.options.text);
+			
+			// changed the last function call in the chain from .html to .append.
+            $bar.append(this.options.template).find('.noty_text').append(this.options.text);
 
             this.$bar = (this.options.layout.parent.object !== null) ? $(this.options.layout.parent.object).css(this.options.layout.parent.css).append($bar) : $bar;
 
@@ -443,10 +445,11 @@ function noty(options) {
             delete options[key];
         }
     });
-
-    if (!options.closeWith) {
+	
+	//pointless as this gets set to the default in the init function
+    /* if (!options.closeWith) {
         options.closeWith = jQuery.noty.defaults.closeWith;
-    }
+    } */
 
     if (options.hasOwnProperty('closeButton')) {
         using_old++;
@@ -481,7 +484,10 @@ function noty(options) {
         options.theme = 'defaultTheme';
     }
 
-    if (!options.hasOwnProperty('dismissQueue')) {
+	//commented this out due to silly behavior, because if the default has been changed 
+	//else where to one of the options in the if then they are not detected.
+	//the developers should probably set the options in the layout include.
+    /* if (!options.hasOwnProperty('dismissQueue')) {
         if (options.layout == 'topLeft'
             || options.layout == 'topRight'
             || options.layout == 'bottomLeft'
@@ -490,7 +496,7 @@ function noty(options) {
         } else {
             options.dismissQueue = false;
         }
-    }
+    } */
 
     if (options.buttons) {
         jQuery.each(options.buttons, function (i, button) {

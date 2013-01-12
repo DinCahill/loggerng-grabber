@@ -58,12 +58,11 @@
 			var endDateTextBox = null;
 			var eventCheck = null;
 			var throbber = null;
+			var fullFileName = null;
 			
 			$(function(){
-				noty({layout: 'bottomRight', text: '<div id="progressbar"><span class="caption">Loading...please wait</span></div>', closeWith: ["button"]});
-				noty({layout: 'bottomRight', text: '<div id="progressbar1"><span class="caption">Loading...please wait</span></div>', closeWith: ["button"]});
-				noty({layout: 'bottomRight', text: '<div id="progressbar2"><span class="caption">Loading...please wait</span></div>', closeWith: ["button"]});
-				$("#testDiv").button();
+				$.noty.defaults.layout = 'bottomRight';
+				$.noty.defaults.closeWith = ["button"];
 				
 				// calendar
 				showDisplayer = $("#calendar").fullCalendar({
@@ -248,12 +247,10 @@
 							$("#fileType").selectmenu("widget").find(".ui-corner-top").removeClass( "ui-corner-top ui-corner-right" ).addClass("ui-corner-tr");
 						}
 					}
-					
 				);
 				
 				// ajust the text in the file type dropdown to align with the text in the file name input
 				$("#fileType").selectmenu("widget").find(".ui-selectmenu-status").css({"padding-left":"5px","padding-top":"0.4em"});
-				
 				
 				// "$("#file").buttonset();" brakes things so manualy do it
 				$("#file").addClass("ui-buttonset");
@@ -270,21 +267,29 @@
 				$("#file .ui-corner-all").removeClass( "ui-corner-all" );
 				
 				//make the request button a button!
-				$("#logRequest").button();
+				$("#logRequest").button().click(function(e) {
+					e.preventDefault();
+					createLogRequest();
+				});
 				
 				// add left and right rounded corners to the first and last button
 				$("#file fieldset .ui-widget:first").addClass("ui-corner-left");
 				$("#file fieldset .ui-widget:last").addClass("ui-corner-right");
 				
+				fullFileName = function(){ return fullFileName.fileName()+"."+fullFileName.fileExtention();};
+				
+				fullFileName.fullTimeName = function(){return fullFileName.fileName.timeName()+"."+fullFileName.fileExtention();};
+				
+				fullFileName.fileName = function(){return $("#fileName").val()||fullFileName.fileName.timeName();};
+				
+				fullFileName.fileName.timeName = function(){return startDateTextBox.datetimepicker('getDate').format("U")+"-"+endDateTextBox.datetimepicker('getDate').format("U");};
+				
+				fullFileName.fileExtention = function(){return $("#fileType").val();};
+				
 				// does a thing. shhhhhh.
 				$("#s").click(function() {
 					$("body").css("background-image", "url(http://bcchang.com/immersive_blog/wp-content/uploads/2009/10/fieldstone-c.jpg)");
 				})
-				
-				// progress
-				$( "#progressbar" ).progressbar({value: 37});
-				$( "#progressbar1" ).progressbar({value: 37});
-				$( "#progressbar2" ).progressbar({value: 37});
 			});
 			
 			// some general utility functions
@@ -334,6 +339,27 @@
 			{
 				showDisplayer.fullCalendar( 'select', start||startDateTextBox.datetimepicker('getDate'), end||endDateTextBox.datetimepicker('getDate'), false );
 			}
+			
+			// create a 
+			function createLogRequest()
+			{
+				var id = fullFileName.fileName.timeName()+fullFileName.fileExtention();
+				if($("#"+id).length)
+				{
+					if($("#"+id)[0].fileName!=fullFileName())
+					{
+						$("#"+id).children("span.caption").text('Loading '+fullFileName());
+					}
+					return;
+				}
+				
+				
+				var elem = $('<div id="'+id+'"><span class="caption">Loading '+fullFileName()+'</span></div>');
+				elem[0].fileName = fullFileName();
+				noty({text: elem});
+				elem.progressbar({value: 37});
+				
+			}
 			// HTML follows
 		</script>
 	</head>
@@ -351,14 +377,13 @@
 								<input type="text" id="fileName" name="fileName" maxlength="64">
 							</div>
 							<select id="fileType" name="fileType">
-								<option value=".mp3" selected="selected">.mp3</option>
-								<option value=".flac">.flac</option>
-								<option value=".ogg">.ogg</option>
+								<option value="mp3" selected="selected">.mp3</option>
+								<option value="flac">.flac</option>
+								<option value="ogg">.ogg</option>
 							</select>
 						</fieldset>
 						<input id="logRequest" type="submit" value="Make Request">
-					</div>
-					
+					</div>					
 					<div>
 						
 					</div>
@@ -367,7 +392,6 @@
 			
 			<br>
 			<br>
-			
 			<div id="calendar" style=""></div>
 		</div>
 	</body>
