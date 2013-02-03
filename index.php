@@ -2,7 +2,8 @@
 <!DOCTYPE html> 
 <html>
 	<head>
-		<title>logger</title>
+		<title>MELON Logger</title>
+		<!-- welcome to MELON - backronym pending -->
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 		<script type="text/javascript" src="js/jquery-1.8.2.min.js"></script>
 		<script type="text/javascript">
@@ -11,6 +12,7 @@
 				active:function(){
 					// the calendar has problems with drawing the google font initially, so redraw it
 					showDisplayer.fullCalendar('render');
+					updateStartEndCal();
 				}
 			};
 			
@@ -192,7 +194,7 @@
 				// this is an array of objects for easily editing the dropdown menu
 				var options = [
 					{label:"None"},
-					{label:"Requests"},
+					{label:"Requests", event:"/loggerng/lemon.php?action=getrequests"},
 					{label:"Shows", select:true, event:"/laconia/range/schedule/timeslot/"}
 					];
 				
@@ -279,12 +281,17 @@
 				fullFileName = function(){ return fullFileName.fileName()+"."+fullFileName.fileExtention();};
 				
 				fullFileName.fullTimeName = function(){return fullFileName.fileName.timeName()+"."+fullFileName.fileExtention();};
-				
-				fullFileName.fileName = function(){return $("#fileName").val()||fullFileName.fileName.timeName();};
+
+				fullFileName.fileName = function(){return fullFileName.fileName.raw()||fullFileName.fileName.timeName();};
+
+				fullFileName.fileName.raw = function(){return $("#fileName").val();};
 				
 				fullFileName.fileName.timeName = function(){return startDateTextBox.datetimepicker('getDate').format("U")+"-"+endDateTextBox.datetimepicker('getDate').format("U");};
 				
 				fullFileName.fileExtention = function(){return $("#fileType").val();};
+				
+				// update the availible max time
+				setInterval(function(){ updateStartEndBox();},60000);
 				
 				// does a thing. shhhhhh.
 				$("#s").click(function() {
@@ -343,6 +350,11 @@
 			// create a 
 			function createLogRequest()
 			{
+				jQuery.ajax("/loggerng/lemon.php?action=make&start="
+							+ startDateTextBox.datetimepicker('getDate').format("U")
+							+ "&end=" + endDateTextBox.datetimepicker('getDate').format("U")
+							+ "&format=" + fullFileName.fileExtention()
+							+ "&title=" + fullFileName.fileName.raw());
 				var id = fullFileName.fileName.timeName()+fullFileName.fileExtention();
 				if($("#"+id).length)
 				{
@@ -354,10 +366,10 @@
 				}
 				
 				
-				var elem = $('<div id="'+id+'"><span class="caption">Loading '+fullFileName()+'</span></div>');
+				var elem = $('<div id="'+id+'"><span class="caption">'+fullFileName()+'</span></div>');
 				elem[0].fileName = fullFileName();
 				noty({text: elem});
-				elem.progressbar({value: 37});
+				elem.progressbar({value: 50});
 				
 			}
 			// HTML follows
