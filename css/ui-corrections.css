@@ -40,6 +40,23 @@ body
 	height:100%;	
 }
 
+.fc-event.ui-state-error
+{
+	border: 1px solid #ffb73d;
+	background: #ffc73d url(ui-darkness/images/ui-bg_glass_40_ffc73d_1x400.png) 50% 50% repeat-x;
+	color: #111111;
+}
+
+.fc-event-title
+{
+	font-size:85%;
+}
+
+.fc-event.ui-state-error .fc-event-skin, .fc-event.ui-state-error a
+{
+	color: #111111;
+}
+
 .ui-datepicker-inline dl
 {
 	margin: 10px 0px 10px 0px;
@@ -116,16 +133,19 @@ body
 }
 
 
-.ui-progressbar {
+.ui-progressbar
+{
 	position:relative;
 	height: 10px;
 }
 
-.ui-progressbar .ui-progressbar-value {
+.ui-progressbar .ui-progressbar-value
+{
 	background-image : url("images/progress.gif");
 }
 
-.ui-progressbar .caption {
+.ui-progressbar .caption
+{
 	line-height:9px;
 	font-size:9px;
 	display: block;
@@ -133,6 +153,7 @@ body
 	height:11px;
 	position:absolute;
 	width:100%;
+	text-shadow:0px 0px 2px black;
 }
 
 .ui-icon-before:before
