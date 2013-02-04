@@ -67,9 +67,25 @@ case "download":
     }
     break;
 case "remove":
-    
+    try {
+        $r->send();
+	switch ($r->getResponseCode()) {
+        case '200':
+            header('HTTP/1.1 200 OK');
+        case '400':
+            header('HTTP/1.1 400 Bad Request');
+            echo $r->getResponseBody();
+            break;
+        default:
+            header('HTTP/1.1 500 Internal Server Error');
+            echo $r->getResponseBody();
+            break;
+        }
+    } catch (HttpException $ex) {
+        echo $ex;
+    }
 default:
     echo "Error: unknown action.";
-exit(1);
+    exit(1);
 }
 ?>
