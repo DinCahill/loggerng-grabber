@@ -263,7 +263,7 @@
 				// remove left and right padding on everything in in the button
 				$("#fileNameCont *").css({"padding-left":"0px","padding-right":"0px"});
 				// the text box for inputting a file name's extra css
-				$("#fileName").css({"height":"1.3em","width": "150px","padding":"0px","border":"0px","margin-left":"0px","margin-right":"0px", "background-color":"rgba(255,255,255,0.6)"});
+				$("#fileName").css({"height":"1.3em","width": "170px","padding":"0px","border":"0px","margin-left":"0px","margin-right":"0px", "background-color":"rgba(255,255,255,0.6)"});
 				
 				// remove rounded corners from all the buttons
 				$("#file .ui-corner-all").removeClass( "ui-corner-all" );
@@ -278,23 +278,40 @@
 				$("#file fieldset .ui-widget:first").addClass("ui-corner-left");
 				$("#file fieldset .ui-widget:last").addClass("ui-corner-right");
 				
+				// the time values for the buttons
 				var timeButtonSelection = [1,3,5,10];
 				
 				for(var i = 0; i < timeButtonSelection.length; i++)
 				{
-					var b = $("<div>"+(i==0?"<span style=\"margin-right:8px;\">Add</span>":"")+timeButtonSelection[i]+(i+1==timeButtonSelection.length?"<span style=\"margin-left:8px;\">minutes</span>":"")+"</div>");
-					$("#timeButtons").append(b);
+					// the add and subtract buttons, the ternery statments give the first and last elements texts
+					var a = $("<div>"+(i==0?"<span style=\"margin-right:6px;\">Add</span>":"")+timeButtonSelection[i]+(i+1==timeButtonSelection.length?"<span style=\"margin-left:6px;\">minutes</span>":"")+"</div>");
+					var b = $("<div>"+(i==0?"<span style=\"margin-right:6px;\">Sub</span>":"")+timeButtonSelection[i]+(i+1==timeButtonSelection.length?"<span style=\"margin-left:6px;\">minutes</span>":"")+"</div>");
+					
+					// these squiggles of code make the buttons, and give them a static click function.
+					$("#timeAddButtons").append(a);
+					a.button().click($.proxy(function(n) {
+						updateStartEndBox(startDateTextBox.datetimepicker('getDate').add(-n).minutes(), endDateTextBox.datetimepicker('getDate').add(n).minutes());
+						updateStartEndCal();
+					}, a, timeButtonSelection[i]));
+					
+					$("#timeSubButtons").append(b);
 					b.button().click($.proxy(function(n) {
 						updateStartEndBox(startDateTextBox.datetimepicker('getDate').add(-n).minutes(), endDateTextBox.datetimepicker('getDate').add(n).minutes());
 						updateStartEndCal();
-					}, b, timeButtonSelection[i]));
+					}, b, -timeButtonSelection[i]));
+					
 				}
 				
-				timeButtonSelection = $("#timeButtons").buttonset().find(".ui-button-text");
-				
+				// alter the buttons to make them less spaced.
+				timeButtonSelection = $("#timeAddButtons").buttonset().css("marginRight",4).find(".ui-button-text");
 				timeButtonSelection.not(":first").css("paddingLeft",5);
 				timeButtonSelection.not(":last").css("paddingRight",5).parent().css("marginRight",-1);
 				
+				timeButtonSelection = $("#timeSubButtons").buttonset().find(".ui-button-text");
+				timeButtonSelection.not(":first").css("paddingLeft",5);
+				timeButtonSelection.not(":last").css("paddingRight",5).parent().css("marginRight",-1);
+				
+				// filename helper functions
 				fullFileName = function(){ return fullFileName.fileName()+"."+fullFileName.fileExtention();};
 				
 				fullFileName.fullTimeName = function(){return fullFileName.fileName.timeName()+"."+fullFileName.fileExtention();};
@@ -337,6 +354,9 @@
 				// if no start or end time are passed in then default to the current
 				start=start||startDateTextBox.datetimepicker('getDate');
 				end=end||endDateTextBox.datetimepicker('getDate');
+				
+				// prevent a bug
+				if(end<=start) {return;}
 				
 				// update the max time of the start datetimepicker to one minute ago
 				// (to maintain a gap of 1 minute between the start and end times)
@@ -413,8 +433,9 @@
 						</fieldset>
 						<input id="logRequest" type="submit" value="Make Request">
 					</div>					
-					<div id="timeAdders" class="small-gap">
-						<fieldset id="timeButtons"></fieldset>
+					<div id="timeButtons" class="small-gap">
+						<fieldset id="timeAddButtons"></fieldset>
+						<fieldset id="timeSubButtons"></fieldset>
 					</div>
 				</form>
 			</div>
