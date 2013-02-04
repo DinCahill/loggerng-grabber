@@ -278,6 +278,23 @@
 				$("#file fieldset .ui-widget:first").addClass("ui-corner-left");
 				$("#file fieldset .ui-widget:last").addClass("ui-corner-right");
 				
+				var timeButtonSelection = [1,3,5,10];
+				
+				for(var i = 0; i < timeButtonSelection.length; i++)
+				{
+					var b = $("<div>"+(i==0?"<span style=\"margin-right:8px;\">Add</span>":"")+timeButtonSelection[i]+(i+1==timeButtonSelection.length?"<span style=\"margin-left:8px;\">minutes</span>":"")+"</div>");
+					$("#timeButtons").append(b);
+					b.button().click($.proxy(function(n) {
+						updateStartEndBox(startDateTextBox.datetimepicker('getDate').add(-n).minutes(), endDateTextBox.datetimepicker('getDate').add(n).minutes());
+						updateStartEndCal();
+					}, b, timeButtonSelection[i]));
+				}
+				
+				timeButtonSelection = $("#timeButtons").buttonset().find(".ui-button-text");
+				
+				timeButtonSelection.not(":first").css("paddingLeft",5);
+				timeButtonSelection.not(":last").css("paddingRight",5).parent().css("marginRight",-1);
+				
 				fullFileName = function(){ return fullFileName.fileName()+"."+fullFileName.fileExtention();};
 				
 				fullFileName.fullTimeName = function(){return fullFileName.fileName.timeName()+"."+fullFileName.fileExtention();};
@@ -383,7 +400,7 @@
 			
 			<div id="buttons" style="display:inline-block; width:33%; vertical-align: top;">
 				<form>
-					<div id="file">
+					<div id="file" class="small-gap">
 						<fieldset>
 							<div id="fileNameCont">
 								<input type="text" id="fileName" name="fileName" maxlength="64">
@@ -396,8 +413,8 @@
 						</fieldset>
 						<input id="logRequest" type="submit" value="Make Request">
 					</div>					
-					<div>
-						
+					<div id="timeAdders" class="small-gap">
+						<fieldset id="timeButtons"></fieldset>
 					</div>
 				</form>
 			</div>
