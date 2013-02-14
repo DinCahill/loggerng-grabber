@@ -1,9 +1,10 @@
 <?php
 require_once "shibbobleh_client.php";
+include "config.php";
 
 $logs_path = "/mnt/logs/";
 
-$url = 'http://urybsod.york.ac.uk:9090/'.$_GET['action'];
+$url = 'http://urybsod.york.ac.uk:{$port}/'.$_GET['action'];
 $options = array('user' => $_SESSION['memberid'],
                  'start' => $_GET['start'],
                  'end' => $_GET['end'],
@@ -68,6 +69,24 @@ case "download":
     break;
 case "remove":
     try {
+        $r->send();
+	switch ($r->getResponseCode()) {
+        case '200':
+            header('HTTP/1.1 200 OK');
+        case '400':
+            header('HTTP/1.1 400 Bad Request');
+            echo $r->getResponseBody();
+            break;
+        default:
+            header('HTTP/1.1 500 Internal Server Error');
+            echo $r->getResponseBody();
+            break;
+        }
+    } catch (HttpException $ex) {
+        echo $ex;
+    }
+case "rename":
+        try {
         $r->send();
 	switch ($r->getResponseCode()) {
         case '200':
