@@ -194,7 +194,7 @@
 				// this is an array of objects for easily editing the dropdown menu
 				var options = [
 					{label:"None"},
-					{label:"Requests", event:"/loggerng/lemon.php?action=getrequests"},
+					{label:"Requests", event:"lemon.php?action=getrequests"},
 					{label:"Shows", select:true, event:"/laconia/range/schedule/timeslot/"}
 					];
 				
@@ -387,7 +387,7 @@
 			// create a 
 			function createLogRequest()
 			{
-				jQuery.ajax("/loggerng/lemon.php?action=make&start="
+				jQuery.ajax("lemon.php?action=make&start="
 							+ startDateTextBox.datetimepicker('getDate').format("U")
 							+ "&end=" + endDateTextBox.datetimepicker('getDate').format("U")
 							+ "&format=" + fullFileName.fileExtention()
