@@ -4,7 +4,7 @@ include "config.php";
 
 $logs_path = "/mnt/logs/";
 
-$url = 'http://urybsod.york.ac.uk:{$port}/'.$_GET['action'];
+$url = 'http://urybsod.york.ac.uk:'.$port.'/'.$_GET['action'];
 $options = array('user' => $_SESSION['memberid'],
                  'start' => $_GET['start'],
                  'end' => $_GET['end'],
