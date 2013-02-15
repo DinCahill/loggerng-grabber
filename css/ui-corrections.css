@@ -3,9 +3,11 @@ body
 	background:#141414;
 	color:white;
 	font-size: 62.5%;
+	font-family:'Open Sans';
 }
 
-.ui-widget
+/* the font wasen't applying correctly to .ui-widget, so use a blunderbuss */
+.ui-widget, .ui-widget *, .ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button
 {
 	font-family:'Open Sans';
 }
