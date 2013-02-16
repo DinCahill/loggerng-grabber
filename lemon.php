@@ -73,6 +73,7 @@ case "remove":
 	switch ($r->getResponseCode()) {
         case '200':
             header('HTTP/1.1 200 OK');
+            break;
         case '400':
             header('HTTP/1.1 400 Bad Request');
             echo $r->getResponseBody();
@@ -91,6 +92,7 @@ case "rename":
 	switch ($r->getResponseCode()) {
         case '200':
             header('HTTP/1.1 200 OK');
+            break;
         case '400':
             header('HTTP/1.1 400 Bad Request');
             echo $r->getResponseBody();
