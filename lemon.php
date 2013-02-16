@@ -120,6 +120,7 @@ case "allprogress":
     } catch (HttpException $ex) {
         echo $ex;
     }
+	break;
 default:
     echo "Error: unknown action.";
     exit(1);
