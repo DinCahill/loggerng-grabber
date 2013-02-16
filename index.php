@@ -193,9 +193,11 @@
 				
 				// this is an array of objects for easily editing the dropdown menu
 				var options = [
-					{label:"None"},
+					{label:"Shows", select:true, event:"/laconia/range/schedule/timeslot/"},
 					{label:"Requests", event:"lemon.php?action=getrequests"},
-					{label:"Shows", select:true, event:"/laconia/range/schedule/timeslot/"}
+					{label:"Shows", event:"/laconia/range/schedule/timeslot/", view:"basicWeek", viewName:"Lists"},
+					{label:"Requests", event:"lemon.php?action=getrequests", view:"basicWeek", viewName:"Lists"},
+					{label:"None"}
 					];
 				
 				for(var i = 0; i < options.length; i++)
@@ -205,8 +207,36 @@
 					var atr = ' value="'+(options[i].event||"")+'"';
 					
 					atr += options[i].select?' selected="selected"':"";
+
+					// this source has a different view
+					if(options[i].view)
+					{
+						options[i].viewName=options[i].viewName||"";
+						
+						// find the optgroup with that view and name
+						var opt = eventCheck.children("optgroup[title=\""+options[i].view+"\"][label=\""+options[i].viewName+"\"]");
+						if(!opt.length)
+						{
+							// oh dear it doesen't exit :(
+							opt = $("<optgroup label=\""+(options[i].viewName?options[i].viewName:"")+"\" title=\""+options[i].view+"\"></optgroup>").appendTo(eventCheck);
+						}
+						// add it to the optgroup
+						opt.append("<option"+atr+">"+options[i].label+"</option>");
+
+					}
+					else
+					{
+						// if it doesent have an optgroup, and there are optgroups then add it before them
+						if(eventCheck.children("optgroup:first").length)
+						{
+							$("<option"+atr+">"+options[i].label+"</option>").insertBefore(eventCheck.children("optgroup:first")[0]);
+						}
+						else
+						{
+							eventCheck.append("<option"+atr+">"+options[i].label+"</option>");
+						}
+					}
 					
-					eventCheck.prepend("<option"+atr+">"+options[i].label+"</option>");
 				}
 				
 				showDisplayer.find(".fc-header-right").prepend(eventCheck); // add the select to the calendar
@@ -263,7 +293,7 @@
 				// remove left and right padding on everything in in the button
 				$("#fileNameCont *").css({"padding-left":"0px","padding-right":"0px"});
 				// the text box for inputting a file name's extra css
-				$("#fileName").css({"height":"1.3em","width": "170px","padding":"0px","border":"0px","margin-left":"0px","margin-right":"0px", "background-color":"rgba(255,255,255,0.6)"});
+				$("#fileName").css({"height":"1.3em","width": "165px","padding":"0px","border":"0px","margin-left":"0px","margin-right":"0px", "background-color":"rgba(255,255,255,0.6)"});
 				
 				// remove rounded corners from all the buttons
 				$("#file .ui-corner-all").removeClass( "ui-corner-all" );
@@ -344,6 +374,16 @@
 				showDisplayer.fullCalendar('removeEventSource');
 				if(option.value)
 				{
+					// does it have a different view? If so it will be in an optgroup
+					var opt = $(option.option).parent("optgroup");
+					if(opt.length)
+					{
+						showDisplayer.fullCalendar( 'changeView', opt.attr("title"));
+					}
+					else
+					{
+						showDisplayer.fullCalendar( 'changeView', "agendaWeek" );
+					}
 					showDisplayer.fullCalendar( 'addEventSource', option.value ); // add the new event source
 				}
 			}
@@ -434,6 +474,8 @@
 						<input id="logRequest" type="submit" value="Make Request">
 					</div>					
 					<div id="timeButtons" class="small-gap">
+						Alter time by:
+						<br>
 						<fieldset id="timeAddButtons"></fieldset>
 						<fieldset id="timeSubButtons"></fieldset>
 					</div>
