@@ -62,6 +62,13 @@
 			var throbber = null;
 			var fullFileName = null;
 			
+			var redrawTimer = null;
+
+			var openRequests = {};
+			var possiblyFinished = {};
+			
+			var lastBox = {};
+			
 			$(function(){
 				$.noty.defaults.layout = 'bottomRight';
 				$.noty.defaults.closeWith = ["button"];
@@ -79,6 +86,7 @@
 					defaultView: "agendaWeek",
 					allDaySlot: false,
 					slotMinutes: 60,
+					ignoreTimezone:false,
 					selectable:true,
 					firstDay:(new Date().getDay()+1)%7, // set the current day to the far right so the full week can be seen
 					theme: true,
@@ -126,6 +134,16 @@
 				
 				// time pickers
 				
+				var tmp = $.timepicker._controls.slider.create;
+				$.timepicker._controls.slider.create = function(tp_inst, obj, unit, val, min, max, step) {
+					var x = tmp(tp_inst, obj, unit, val, min, max, step);
+					var y = x.slider("option","stop");
+					return x.slider("option","stop", function(event, ui) {
+						lastBox[unit] = tp_inst;
+						y(event, ui);
+					});
+				}
+				
 				// time picker for the start of selection
 				startDateTextBox = $('#startTime').datetimepicker({
 					/* hideCalendar is a custom property!
@@ -146,12 +164,35 @@
 							var testStartDate = startDateTextBox.datetimepicker('getDate');
 							var testEndDate = endDateTextBox.datetimepicker('getDate');
 							if (testStartDate >= testEndDate)
-								endDateTextBox.datetimepicker('setDate', testStartDate.add(1).minute());
+							{
+								var alteredDate = testStartDate.set({
+									hour: lastBox.hour?lastBox.hour.hour:null,
+									minute: lastBox.minute?lastBox.minute.minute:null
+								});
+								
+								// test if the minuet was not set by the current instace 
+								if((lastBox.minute||inst) != inst) // equivelent to lastBox.minute != inst && lastBox.minute
+								{
+									alteredDate.add(-1).minute();
+								}
+								
+								startDateTextBox.datetimepicker('setDate', alteredDate);
+								endDateTextBox.datetimepicker('setDate', alteredDate.add(1).minute());
+								
+								/*if(lastBox == endDateTextBox)
+								{
+								//	startDateTextBox.datetimepicker('setDate', testEndDate.add(-1).minute());
+								}
+								else
+								{
+									endDateTextBox.datetimepicker('setDate', testStartDate.add(1).minute());
+								}*/
+							}
 						}
 						else {
 							endDateTextBox.val(dateText);
 						}
-						updateStartEndBox();
+						//updateStartEndBox();
 						updateStartEndCal();
 					}
 				});
@@ -170,12 +211,35 @@
 							var testStartDate = startDateTextBox.datetimepicker('getDate');
 							var testEndDate = endDateTextBox.datetimepicker('getDate');
 							if (testStartDate >= testEndDate)
-								startDateTextBox.datetimepicker('setDate', testEndDate.add(-1).minute());
+							{
+								var alteredDate = testEndDate.set({
+									hour: lastBox.hour?lastBox.hour.hour:null,
+									minute: lastBox.minute?lastBox.minute.minute:null
+								});
+								
+								// test if the minuet was not set by the current instace 
+								if((lastBox.minute||inst) != inst) // equivelent to lastBox.minute != inst && lastBox.minute
+								{
+									alteredDate.add(1).minute();
+								}
+								
+								endDateTextBox.datetimepicker('setDate', alteredDate);
+								startDateTextBox.datetimepicker('setDate', alteredDate.add(-1).minute());
+								
+								/*if(lastBox == startDateTextBox)
+								{
+								//	endDateTextBox.datetimepicker('setDate', testStartDate.add(1).minute());
+								}
+								else
+								{
+									startDateTextBox.datetimepicker('setDate', testEndDate.add(-1).minute());
+								}*/
+							}
 						}
 						else {
 							startDateTextBox.val(dateText);
 						}
-						updateStartEndBox();
+						//updateStartEndBox();
 						updateStartEndCal();
 					}
 				});
@@ -350,12 +414,21 @@
 
 				fullFileName.fileName.raw = function(){return $("#fileName").val();};
 				
-				fullFileName.fileName.timeName = function(){return startDateTextBox.datetimepicker('getDate').format("U")+"-"+endDateTextBox.datetimepicker('getDate').format("U");};
+				fullFileName.fileName.timeName = function(){return fullFileName.fileName.timeName.start()+"-"+fullFileName.fileName.timeName.end();};
+				
+				fullFileName.fileName.timeName.start = function(){return startDateTextBox.datetimepicker('getDate').format("U");};
+				
+				fullFileName.fileName.timeName.end = function(){return endDateTextBox.datetimepicker('getDate').format("U");};
 				
 				fullFileName.fileExtention = function(){return $("#fileType").val();};
 				
+				// fetch the inital list of ongoing progresses.
+				updateProgress();
+				
 				// update the availible max time
 				setInterval(function(){ updateStartEndBox();},60000);
+
+				setInterval(function(){ if(!$.isEmptyObject(openRequests)) {updateProgress();}},5000);
 				
 				// does a thing. shhhhhh.
 				$("#s").click(function() {
@@ -391,6 +464,11 @@
 			//update the start and end datetimepickers
 			function updateStartEndBox(start, end)
 			{
+				if(start || end)
+				{
+				//	lastBox = {}
+				}
+				
 				// if no start or end time are passed in then default to the current
 				start=start||startDateTextBox.datetimepicker('getDate');
 				end=end||endDateTextBox.datetimepicker('getDate');
@@ -424,7 +502,7 @@
 				showDisplayer.fullCalendar( 'select', start||startDateTextBox.datetimepicker('getDate'), end||endDateTextBox.datetimepicker('getDate'), false );
 			}
 			
-			// create a 
+			// create a log request
 			function createLogRequest()
 			{
 				jQuery.ajax("lemon.php?action=make&start="
@@ -435,19 +513,97 @@
 				var id = fullFileName.fileName.timeName()+fullFileName.fileExtention();
 				if($("#"+id).length)
 				{
-					if($("#"+id)[0].fileName!=fullFileName())
-					{
-						$("#"+id).children("span.caption").text('Loading '+fullFileName());
-					}
 					return;
 				}
 				
-				
 				var elem = $('<div id="'+id+'"><span class="caption">'+fullFileName()+'</span></div>');
-				elem[0].fileName = fullFileName();
-				noty({text: elem});
-				elem.progressbar({value: 50});
 				
+				if(!openRequests[id])
+				{
+					openRequests[id] = {
+						file : fullFileName(),
+						start : fullFileName.fileName.timeName.start(),
+						end : fullFileName.fileName.timeName.end(),
+						format : fullFileName.fileExtention(),
+						progress : 0
+					};
+				}
+				openRequests[id].e = elem;
+				
+				openRequests[id].n = noty({text: elem, callback: { onClose:jQuery.proxy( function() {
+						delete this.e;
+						delete this.n;
+				}, openRequests[id])}});
+				elem.progressbar({value: openRequests[id].progress});
+			}
+
+			function updateProgress()
+			{
+				$.get( "lemon.php?action=allprogress", undefined, undefined, "json").done(function(data) {
+					
+					// make a shallow copy of the requests
+					possiblyFinished = jQuery.extend({}, openRequests);
+					
+					while(data.length)
+					{
+						var n = data.pop();
+						if(!(n.start&&n.end&&n.format)) {continue;}
+						var id = n.start+"-"+n.end+n.format;
+						if(!openRequests[id])
+						{
+							openRequests[id] = {
+								start : n.start,
+								end : n.end,
+								format : n.format
+							}
+						}
+						
+						openRequests[id].progress = n.progress;
+						$(openRequests[id].e).progressbar("option", {value: n.progress});
+						
+						// delete!
+						delete possiblyFinished[id];
+					}
+					
+					$.each(possiblyFinished, function(k, v) {
+						if(!(v.start&&v.end&&v.format)) {return 1;} // continue
+						
+						$.get("lemon.php?action=progress"
+							+ "&start=" + v.start
+							+ "&end=" + v.end
+							+ "&format=" + v.format, undefined, undefined, "text").done(function(data) {
+								var d = parseInt(data);
+								if(d==100)
+								{
+									var tx = '<div id="'+k+'"><a href="lemon.php?action=download&start='+openRequests[k].start+'&end='+openRequests[k].end+'&format='+openRequests[k].format+'">Download '+openRequests[k].file+'</a><br><span style="font-size:55%;">(From: '+(new Date(parseInt(openRequests[k].start)*1000)).format("%a %eS %b %Y %T")+' To: '+(new Date(parseInt(openRequests[k].end)*1000)).format("%a %eS %b %Y %T")+')</span></div>';
+									if(openRequests[k].n)
+									{
+										openRequests[k].n.setText(tx);
+									}
+									else
+									{
+										noty({text: tx});
+									}
+									delete openRequests[k];
+									clearTimeout(redrawTimer);
+									redrawTimer = setTimeout(function(){showDisplayer.fullCalendar('refetchEvents');}, 1000);
+								}
+								else if(d<0||d>100)
+								{
+									if(openRequests[k].n)
+									{
+										openRequests[k].n.close();
+									}
+									delete openRequests[k];
+								}
+								else 
+								{
+									openRequests[k].progress = d;
+									$(openRequests[k].e).progressbar("option", {value: d});
+								}
+							});
+					});
+				});
 			}
 			// HTML follows
 		</script>

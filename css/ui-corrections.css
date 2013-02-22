@@ -163,6 +163,12 @@ body
 	text-shadow:0px 0px 2px black;
 }
 
+.ui-state-default .ui-state-highlight a
+{
+	color: #2E7DB2;
+	text-decoration: underline;
+}
+
 .ui-icon-before:before
 {
 	background-image: url("ui-darkness/images/ui-icons_cccccc_256x240.png");
