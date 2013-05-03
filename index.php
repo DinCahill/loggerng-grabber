@@ -624,7 +624,7 @@
 							<select id="fileType" name="fileType">
 								<option value="mp3" selected="selected">.mp3</option>
 								<option value="flac">.flac</option>
-								<option value="ogg">.ogg</option>
+								<!--<option value="ogg">.ogg</option>-->
 							</select>
 						</fieldset>
 						<input id="logRequest" type="submit" value="Make Request">
