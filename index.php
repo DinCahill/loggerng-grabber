@@ -554,7 +554,8 @@
 							openRequests[id] = {
 								start : n.start,
 								end : n.end,
-								format : n.format
+								format : n.format,
+								n : noty({text: elem, callback: { onClose:jQuery.proxy( function() { delete this.e; delete this.n;}, openRequests[id])}})
 							}
 						}
 						
