@@ -1,5 +1,6 @@
-﻿<?php require_once "shibbobleh_client.php" ?>
-<!DOCTYPE html> 
+<?php
+require_once "shibbobleh_client.php";
+?><!DOCTYPE html> 
 <html>
 	<head>
 		<title>MELON Logger</title>
