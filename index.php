@@ -551,12 +551,15 @@
 						var id = n.start+"-"+n.end+n.format;
 						if(!openRequests[id])
 						{
+							var elem = $('<div id="'+id+'"><span class="caption">'+fullFileName()+'</span></div>');
 							openRequests[id] = {
 								start : n.start,
 								end : n.end,
 								format : n.format,
+								e : elem,
 								n : noty({text: elem, callback: { onClose:jQuery.proxy( function() { delete this.e; delete this.n;}, openRequests[id])}})
 							}
+							elem.progressbar({value: openRequests[id].progress});
 						}
 						
 						openRequests[id].progress = n.progress;
