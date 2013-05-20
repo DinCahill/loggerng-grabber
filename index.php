@@ -351,7 +351,7 @@
 				// "$("#file").buttonset();" brakes things so manualy do it
 				$("#file").addClass("ui-buttonset");
 				
-				// the wrapper button for the file name input +  extra css + give focus
+				// the wrapper button for the file name input +	extra css + give focus
 				$("#fileNameCont").button().css({"vertical-align":"top", "cursor":"text","margin-right":"-3px"}).click(function(){$("#fileName").focus();});
 				
 				// remove left and right padding on everything in in the button
