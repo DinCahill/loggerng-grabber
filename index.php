@@ -551,12 +551,13 @@
 						var id = n.start+"-"+n.end+n.format;
 						if(!openRequests[id])
 						{
-							var elem = $('<div id="'+id+'"><span class="caption">'+fullFileName()+'</span></div>');
+							var filename = (n.tile || (n.start + "-" + n.end)) + n.format;
+							var elem = $('<div id="'+id+'"><span class="caption">'+filename+'</span></div>');
 							openRequests[id] = {
 								start : n.start,
 								end : n.end,
 								format : n.format,
-								file : (n.tile || (n.start + "-" + n.end)) + n.format,
+								file : filename,
 								e : elem,
 								n : noty({text: elem, callback: { onClose:jQuery.proxy( function() { delete this.e; delete this.n;}, openRequests[id])}})
 							}
