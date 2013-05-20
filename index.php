@@ -551,7 +551,7 @@
 						var id = n.start+"-"+n.end+n.format;
 						if(!openRequests[id])
 						{
-							var filename = (n.tile || (n.start + "-" + n.end)) + n.format;
+							var filename = (n.title || (n.start + "-" + n.end)) + n.format;
 							var elem = $('<div id="'+id+'"><span class="caption">'+filename+'</span></div>');
 							openRequests[id] = {
 								start : n.start,
