@@ -352,7 +352,7 @@ require_once "shibbobleh_client.php";
 				// "$("#file").buttonset();" brakes things so manualy do it
 				$("#file").addClass("ui-buttonset");
 				
-				// the wrapper button for the file name input +  extra css + give focus
+				// the wrapper button for the file name input +	extra css + give focus
 				$("#fileNameCont").button().css({"vertical-align":"top", "cursor":"text","margin-right":"-3px"}).click(function(){$("#fileName").focus();});
 				
 				// remove left and right padding on everything in in the button
@@ -552,11 +552,17 @@ require_once "shibbobleh_client.php";
 						var id = n.start+"-"+n.end+n.format;
 						if(!openRequests[id])
 						{
+							var filename = (n.title || (n.start + "-" + n.end)) + '.' + n.format;
+							var elem = $('<div id="'+id+'"><span class="caption">'+filename+'</span></div>');
 							openRequests[id] = {
 								start : n.start,
 								end : n.end,
-								format : n.format
+								format : n.format,
+								file : filename,
+								e : elem,
+								n : noty({text: elem, callback: { onClose:jQuery.proxy( function() { delete this.e; delete this.n;}, openRequests[id])}})
 							}
+							elem.progressbar({value: openRequests[id].progress});
 						}
 						
 						openRequests[id].progress = n.progress;
