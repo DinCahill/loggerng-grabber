@@ -556,6 +556,7 @@
 								start : n.start,
 								end : n.end,
 								format : n.format,
+								file : (n.tile || (n.start + "-" + n.end)) + n.format,
 								e : elem,
 								n : noty({text: elem, callback: { onClose:jQuery.proxy( function() { delete this.e; delete this.n;}, openRequests[id])}})
 							}
