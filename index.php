@@ -130,7 +130,8 @@ require_once "shibbobleh_client.php";
 						
 					},
 					
-					events:'/laconia/range/schedule/timeslot/' // default event
+					//events:'/laconia/range/schedule/timeslot/' // default event
+					events:'lemon.php?action=getrequests'
 				});
 				
 				// time pickers
@@ -258,9 +259,9 @@ require_once "shibbobleh_client.php";
 				
 				// this is an array of objects for easily editing the dropdown menu
 				var options = [
-					{label:"Shows", select:true, event:"/laconia/range/schedule/timeslot/"},
+					//{label:"Shows", select:true, event:"/laconia/range/schedule/timeslot/"},
 					{label:"Requests", event:"lemon.php?action=getrequests"},
-					{label:"Shows", event:"/laconia/range/schedule/timeslot/", view:"basicWeek", viewName:"Lists"},
+					//{label:"Shows", event:"/laconia/range/schedule/timeslot/", view:"basicWeek", viewName:"Lists"},
 					{label:"Requests", event:"lemon.php?action=getrequests", view:"basicWeek", viewName:"Lists"},
 					{label:"None"}
 					];
