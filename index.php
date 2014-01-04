@@ -1,5 +1,5 @@
 <?php
-require_once "shibbobleh_client.php";
+require_once "traditional_auth.php";
 ?><!DOCTYPE html> 
 <html>
 	<head>
