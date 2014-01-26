@@ -1,0 +1,9 @@
+Web interface for loggerng-server. Written in HTML/JS with JQuery.
+
+Configuration:
+
+config.php -
+
+<?php
+$port = 'loggerng-server-port';
+?>
