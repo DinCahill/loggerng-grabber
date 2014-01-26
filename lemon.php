@@ -5,13 +5,18 @@ include "config.php";
 $logs_path = "/mnt/logs/";
 
 $url = 'http://urybsod.york.ac.uk:'.$port.'/'.$_GET['action'];
-$options = array('user' => $_SESSION['memberid'],
-                 'start' => $_GET['start'],
-                 'end' => $_GET['end'],
-                 'format' => $_GET['format'],
-                 'title' => $_GET['title']);
+function just($x)
+{
+  return isset($_GET[$x]) ? $_GET[$x] : null;
+}
+
+$options = array('user' => 999,
+                 'start' => just($_GET['start']) ,
+                 'end' => just($_GET['end']),
+                 'format' => just($_GET['format']),
+		 'title' => just($_GET['title']));
 $r = new HttpRequest($url, HttpRequest::METH_GET);
-$r->setQueryData($options);
+$r->setQueryData(array_filter($options));
 
 switch ($_GET['action']) {
 case "make":
